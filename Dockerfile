@@ -18,16 +18,10 @@ ENV SCALA_VERSION=${SCALA_VERSION}
 # Install baseline utility packages
 RUN apt-get update \
     && apt-get install -y --fix-broken \
-    && apt-get install -y --no-install-recommends dirmngr python python3 curl sudo gnupg apt-transport-https git ssh tar gzip lsb-release software-properties-common awscli bc \
+    && apt-get install -y --no-install-recommends dirmngr python curl sudo gnupg apt-transport-https git ssh tar gzip lsb-release software-properties-common awscli bc \
     && apt-get upgrade -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-
-# Install PIP & AWS CLI
-RUN sudo curl -O https://bootstrap.pypa.io/get-pip.py \
-    && python3 get-pip.py --user \
-    && echo "PATH=~/.local/bin:$PATH" >> ~/.bash_profile \
-    && /home/harrys/.local/bin/pip install awscli --upgrade --user
 
 # Create harrys user for running commands non-root
 RUN ["adduser", "--disabled-password", "--gecos", "", "harrys"]
@@ -69,6 +63,12 @@ RUN sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/
     && sudo apt-get install -y --no-install-recommends docker-ce \
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
+
+# Install PIP & AWS CLI
+RUN sudo curl -O https://bootstrap.pypa.io/get-pip.py \
+    && python3 get-pip.py --user \
+    && echo "PATH=~/.local/bin:$PATH" >> ~/.bash_profile \
+    && /home/harrys/.local/bin/pip install awscli --upgrade --user
 
 # Add harrys user to the docker group
 RUN sudo usermod -aG docker harrys
