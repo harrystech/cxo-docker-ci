@@ -8,8 +8,8 @@ ENTRYPOINT ["/bin/bash"]
 
 # Apparently moving these arguments above the "FROM" statement
 # blows away the values. Stupid docker.
-ARG SBT_VERSION=1.1.4
-ARG SCALA_VERSION=2.12.4
+ARG SBT_VERSION=1.1.5
+ARG SCALA_VERSION=2.12.6
 
 # Export values for sub container use
 ENV SBT_VERSION=${SBT_VERSION}
