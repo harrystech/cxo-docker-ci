@@ -8,7 +8,7 @@ ENTRYPOINT ["/bin/bash"]
 
 # Apparently moving these arguments above the "FROM" statement
 # blows away the values. Stupid docker.
-ARG SBT_VERSION=1.1.5
+ARG SBT_VERSION=1.1.6
 ARG SCALA_VERSION=2.12.6
 
 # Export values for sub container use
@@ -18,7 +18,7 @@ ENV SCALA_VERSION=${SCALA_VERSION}
 # Install baseline utility packages
 RUN apt-get update \
     && apt-get install -y --fix-broken \
-    && apt-get install -y --no-install-recommends dirmngr python curl sudo gnupg apt-transport-https git ssh tar gzip lsb-release software-properties-common awscli bc \
+    && apt-get install -y --no-install-recommends sudo gnupg dirmngr apt-transport-https lsb-release software-properties-common curl python-pip \
     && apt-get upgrade -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -35,7 +35,7 @@ WORKDIR /home/harrys
 RUN echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list \
     && sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823 \
     && sudo apt-get update \
-    && sudo apt-get install sbt \
+    && sudo apt-get install -y sbt \
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
 
@@ -64,11 +64,9 @@ RUN sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/
     && sudo apt-get clean \
     && sudo rm -rf /var/lib/apt/lists/*
 
-# Install PIP & AWS CLI
-RUN sudo curl -O https://bootstrap.pypa.io/get-pip.py \
-    && python3 get-pip.py --user \
-    && echo "PATH=~/.local/bin:$PATH" >> ~/.bash_profile \
-    && /home/harrys/.local/bin/pip install awscli --upgrade --user
+# Install AWS CLI
+RUN pip install setuptools wheel --user
+RUN pip install awscli --user
 
 # Add harrys user to the docker group
 RUN sudo usermod -aG docker harrys
